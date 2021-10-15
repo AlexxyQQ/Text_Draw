@@ -1,127 +1,45 @@
-import pygame
 from tkinter import *
 
 
-def gen_grid_win(ppi_choose, w_choose, h_choose):
-    screen = pygame.display.set_mode((w_choose, h_choose))
+def first_window():
+    WIN = Tk()
+    WIN.geometry('500x500')
+    WIN.config(bg='black')
 
-    class spot:
-        def __init__(self, x, y):
-            self.i = x
-            self.j = y
-            self.f = 0
-            self.g = 0
-            self.h = 0
-            self.neighbors = []
-            self.previous = None
-            self.obs = False
-            self.closed = False
-            self.value = 1
+    Frame_bg = PhotoImage(file='Images\Frame 1.png')
+    Label(WIN, image=Frame_bg).place(x=0, y=0)
 
-        def show(self, color, st):
-            if self.closed == False:
-                pygame.draw.rect(screen, color, (self.i * w, self.j * h, w, h),
-                                 st)
-                pygame.display.update()
+    HEIGHT = StringVar()
+    HEIGHT.set('250')
+    WIDTH = StringVar()
+    WIDTH.set('250')
+    PPI = StringVar()
+    PPI.set('50')
+    H = Entry(WIN,
+              text=HEIGHT,
+              font=('Arial', 25),
+              width=4,
+              bg='#42C9B5',
+              fg='white',
+              bd=0).place(x=166, y=150)
+    W = Entry(WIN,
+              text=WIDTH,
+              font=('Arial', 25),
+              width=4,
+              bg='#44C5BB',
+              fg='white',
+              bd=0).place(x=166, y=229)
+    P = Entry(WIN,
+              text=PPI,
+              font=('Arial', 25),
+              width=4,
+              bg='#46C1BC',
+              fg='white',
+              bd=0).place(x=166, y=306)
 
-        def path(self, color, st):
-            pygame.draw.rect(screen, color, (self.i * w, self.j * h, w, h), st)
-            pygame.display.update()
+    Button(WIN, text='Generate', font=('Arial', 25)).place(x=170, y=400)
 
-        def addNeighbors(self, grid):
-            i = self.i
-            j = self.j
-            if i < ppi - 1 and grid[self.i + 1][j].obs == False:
-                self.neighbors.append(grid[self.i + 1][j])
-            if i > 0 and grid[self.i - 1][j].obs == False:
-                self.neighbors.append(grid[self.i - 1][j])
-            if j < ppi - 1 and grid[self.i][j + 1].obs == False:
-                self.neighbors.append(grid[self.i][j + 1])
-            if j > 0 and grid[self.i][j - 1].obs == False:
-                self.neighbors.append(grid[self.i][j - 1])
-
-    ppi = ppi_choose
-    grid = [0 for i in range(ppi)]
-
-    red = (255, 0, 0)
-    green = (0, 255, 0)
-    blue = (0, 0, 255)
-    grey = (220, 220, 220)
-    w = w_choose / ppi
-    h = h_choose / ppi
-
-    # create 2d array
-    for i in range(ppi):
-        grid[i] = [0 for i in range(ppi)]
-
-    # Create Spots
-    for i in range(ppi):
-        for j in range(ppi):
-            grid[i][j] = spot(i, j)
-
-    # SHOW RECT
-    for i in range(ppi):
-        for j in range(ppi):
-            grid[i][j].show((255, 255, 255), 1)
-
-    for i in range(0, ppi):
-        grid[0][i].show(grey, 0)
-        grid[0][i].obs = True
-        grid[ppi - 1][i].obs = True
-        grid[ppi - 1][i].show(grey, 0)
-        grid[i][ppi - 1].show(grey, 0)
-        grid[i][0].show(grey, 0)
-        grid[i][0].obs = True
-        grid[i][ppi - 1].obs = True
-
-    pygame.init()
-
-    def mousePress(x):
-        t = x[0]
-        w = x[1]
-        g1 = t // (w_choose // ppi)
-        g2 = w // (h_choose // ppi)
-        acess = grid[g1][g2]
-
-        if acess.obs == False:
-            acess.obs = True
-            acess.show((255, 255, 255), 0)
-
-    loop = True
-    while loop:
-        ev = pygame.event.get()
-
-        for event in ev:
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            if pygame.mouse.get_pressed()[0]:
-                try:
-                    pos = pygame.mouse.get_pos()
-                    mousePress(pos)
-                except:
-                    pass
+    WIN.mainloop()
 
 
-def start_win():
-    def call_gen():
-        gen_grid_win(int(ppi.get()), int(Width.get()), int(Height.get()))
-
-    root = Tk()
-    root.geometry('200x200+0+0')
-
-    Width = StringVar()
-    Height = StringVar()
-    ppi = StringVar()
-    Label(root, text='Width', font=('Arial', 15)).pack()
-    Entry(root, text=Width, font=('Arial', 15)).pack()
-    Label(root, text='Height', font=('Arial', 15)).pack()
-    Entry(root, text=Height, font=('Arial', 15)).pack()
-    Label(root, text='Ppi', font=('Arial', 15)).pack()
-    Entry(root, text=ppi, font=('Arial', 15)).pack()
-
-    Button(root, text='Gen', font=('Arial', 15), command=call_gen).pack()
-
-    root.mainloop()
-
-
-start_win()
+first_window()
