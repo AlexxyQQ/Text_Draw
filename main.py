@@ -5,40 +5,53 @@ import sys
 from pygame.draw import rect
 
 
-def second_window(H, W, P):
+def second_window(Hs, Ws):
 
+    H = int(Hs)
+    W = int(Ws)
+
+    # Define some colors
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     GREEN = (0, 255, 0)
-    RED = (255, 0, 0)
 
-    WIDTH = 15
-    HEIGHT = 15
+    # This sets the WIDTH and HEIGHT of each grid location
+    WIDTH_rect = 15
+    HEIGHT_rect = 15
+
+    # This sets the margin between each cell
     MARGIN = 1
+
+    Hp = H // HEIGHT_rect
+    Wp = W // WIDTH_rect
+
+    # Create a 2 dimensional array. A two dimensional
+    # array is simply a list of lists.
     grid = []
-    for row in range(int(W)):
+    for row in range(Hp):
         # Add an empty array that will hold each cell
         # in this row
         grid.append([])
-        for column in range(int(H)):
+        for column in range(Wp):
             grid[row].append(0)  # Append a cell
 
+    # Initialize pygame
     pygame.init()
-    WINDOW_SIZE = [int(W), int(H)]
+
+    # Set the HEIGHT_rect and WIDTH_rect of the screen
+    WINDOW_SIZE = [H, W]
     screen = pygame.display.set_mode(WINDOW_SIZE)
 
+    # Set title of screen
+    pygame.display.set_caption("Array Backed Grid")
+
+    # Loop until the user clicks the close button.
     done = False
 
+    # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
 
-    def mouse_press(pos):
-        # Change the x/y screen coordinates to grid coordinates
-        column = pos[0] // (int(W) // 15)
-        row = pos[1] // (int(H) // 15)
-        # Set that location to one
-        print(grid[row][column])
-        grid[row][column] = 1
-
+    # -------- Main Program Loop -----------
     while not done:
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
@@ -47,58 +60,50 @@ def second_window(H, W, P):
                 try:
                     # User clicks the mouse. Get the position
                     pos = pygame.mouse.get_pos()
-                    mouse_press(pos)
+                    # Change the x/y screen coordinates to grid coordinates
+                    column = pos[0] // (WIDTH_rect + MARGIN)
+                    row = pos[1] // (HEIGHT_rect + MARGIN)
+                    # Set that location to one
+                    grid[row][column] = 1
+                except:
+                    pass
+            if pygame.mouse.get_pressed()[2]:
+                try:
+                    # User clicks the mouse. Get the position
+                    pos = pygame.mouse.get_pos()
+                    # Change the x/y screen coordinates to grid coordinates
+                    column = pos[0] // (WIDTH_rect + MARGIN)
+                    row = pos[1] // (HEIGHT_rect + MARGIN)
+                    # Set that location to one
+                    grid[row][column] = 0
                 except:
                     pass
 
+        # Set the screen background
         screen.fill(BLACK)
 
-        for row in range(int(W)):
-            for column in range(int(H)):
+        # Draw the grid
+        for row in range(Hp):
+            for column in range(Wp):
                 color = WHITE
                 if grid[row][column] == 1:
                     color = GREEN
-                pygame.draw.rect(
-                    screen,
-                    color, [(MARGIN + WIDTH) * column + MARGIN,
-                            (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT])
+                if grid[row][column] == 0:
+                    color = WHITE
+                pygame.draw.rect(screen, color,
+                                 [(MARGIN + WIDTH_rect) * column + MARGIN,
+                                  (MARGIN + HEIGHT_rect) * row + MARGIN,
+                                  WIDTH_rect, HEIGHT_rect])
 
+        # Limit to 60 frames per second
         clock.tick(60)
-        pygame.display.update()
-        #pygame.display.flip()
 
+        # Go ahead and update the screen with what we've drawn.
+        pygame.display.flip()
+
+    # Be IDLE friendly. If you forget this line, the program will 'hang'
+    # on exit.
     pygame.quit()
-    '''global SCREEN, CLOCK
-    pygame.init()
-    SCREEN = pygame.display.set_mode((int(W), int(H)))
-    CLOCK = pygame.time.Clock()
-    SCREEN.fill((0, 0, 0))
-    a = (21, 26, 120)
-    coordinates = []
-
-    def draw():
-        rect = pygame.Rect(coordinates[1])
-        pygame.draw.rect(SCREEN, a, rect, 0)
-        pygame.display.update()
-
-    while True:
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if pygame.mouse.get_pressed()[0]:
-                try:
-                    pos = pygame.mouse.get_pos()
-                except:
-                    pass
-
-        for i in range(0, int(W), 16):
-            for j in range(0, int(H), 16):
-                coordinates.append((i, j))
-        draw()
-
-'''
 
 
 def first_window():
@@ -181,7 +186,7 @@ def first_window():
     Warning.place(x=145, y=365)
 
     def gen_windows():
-        second_window(HEIGHT.get(), WIDTH.get(), PPI.get())
+        second_window(HEIGHT.get(), WIDTH.get())
 
     """ Entries """
     H = Entry(WIN,
