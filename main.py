@@ -2,6 +2,7 @@ import sys
 from tkinter import *
 import pygame
 from PIL import Image, ImageTk
+import math
 
 
 def second_window(Hs, Ws):
@@ -63,8 +64,10 @@ def second_window(Hs, Ws):
                     # Change the x/y screen coordinates to grid coordinates
                     column = pos[0] // (WIDTH_rect + MARGIN)
                     row = pos[1] // (HEIGHT_rect + MARGIN)
+
                     # Set that location to one
                     grid[row][column] = 1
+
                 except:
                     pass
             if pygame.mouse.get_pressed()[2]:
@@ -104,6 +107,29 @@ def second_window(Hs, Ws):
     # Be IDLE friendly. If you forget this line, the program will 'hang'
     # on exit.
     pygame.quit()
+
+    with open('text.txt', 'a') as file:
+        try:
+            with open('text.txt', 'r') as reading:
+                for a in reading:
+                    if len(a) > 1:
+                        with open('text.txt', 'w') as deleteing:
+                            deleteing.write('')
+
+            with open('text.txt', 'r+') as f:
+
+                for i in grid:
+                    if ((len(i) + 1) % Wp):
+                        f.write('\n')
+                    f.write(str(i))
+        except:
+            with open('text.txt', 'r+') as f:
+
+                for i in grid:
+                    if ((len(i) + 1) % Wp):
+                        f.write('\n')
+                    f.write(str(i))
+
     sys.exit()
 
 
