@@ -52,7 +52,9 @@ def second_window(Hs, Ws):
 
     # Set title of screen
 
-    pygame.display.set_caption('Array Backed Grid')
+    pygame.display.set_caption('Text Draw')
+    icon = pygame.image.load('Images/icon.png')
+    pygame.display.set_icon(icon)
 
     # Loop until the user clicks the close button.
 
@@ -208,6 +210,8 @@ def first_window():
     WIN = Tk()
     WIN.geometry('500x500')
     WIN.config(bg='black')
+    WIN.iconbitmap('Images/icon.ico')
+    WIN.title('Text Draw')
     Frame_bg = PhotoImage(file='Images\Frame 1.png')
     Label(WIN, image=Frame_bg).place(x=0, y=0)
     HEIGHT = StringVar()
