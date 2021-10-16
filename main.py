@@ -1,8 +1,7 @@
+import sys
 from tkinter import *
 import pygame
-import sys
-
-from pygame.draw import rect
+from PIL import Image, ImageTk
 
 
 def second_window(Hs, Ws):
@@ -24,15 +23,16 @@ def second_window(Hs, Ws):
 
     Hp = H // HEIGHT_rect
     Wp = W // WIDTH_rect
+    print(Hp, Wp)
 
     # Create a 2 dimensional array. A two dimensional
     # array is simply a list of lists.
     grid = []
-    for row in range(Hp):
+    for row in range(Wp):
         # Add an empty array that will hold each cell
         # in this row
         grid.append([])
-        for column in range(Wp):
+        for column in range(Hp):
             grid[row].append(0)  # Append a cell
 
     # Initialize pygame
@@ -83,8 +83,8 @@ def second_window(Hs, Ws):
         screen.fill(BLACK)
 
         # Draw the grid
-        for row in range(Hp):
-            for column in range(Wp):
+        for row in range(Wp):
+            for column in range(Hp):
                 color = WHITE
                 if grid[row][column] == 1:
                     color = GREEN
@@ -104,6 +104,7 @@ def second_window(Hs, Ws):
     # Be IDLE friendly. If you forget this line, the program will 'hang'
     # on exit.
     pygame.quit()
+    sys.exit()
 
 
 def first_window():
@@ -119,8 +120,6 @@ def first_window():
     HEIGHT.set('250')
     WIDTH = StringVar()
     WIDTH.set('250')
-    PPI = StringVar()
-    PPI.set('50')
     """ Entry Checks """
     def clear_heignt(event):
         if HEIGHT.get() == '250':
@@ -129,10 +128,6 @@ def first_window():
     def clear_width(event):
         if WIDTH.get() == '250':
             WIDTH.set('')
-
-    def clear_ppi(event):
-        if PPI.get() == '50':
-            PPI.set('')
 
     def check_height_val(event):
         def check():
@@ -166,27 +161,20 @@ def first_window():
 
         WIN.after(50, check)
 
-    def check_ppi_val(event):
-        def check():
-            try:
-                if int(PPI.get()) > 100:
-                    Warning.place(x=180, y=365)
-                    Warning.config(text='Pixels too much')
-                    WIN.after(500, PPI.set(''))
-                else:
-                    Warning.config(text='')
-            except:
-                Warning.config(text='Please Enter Numaric Values only')
-                Warning.place(x=109, y=365)
-                WIN.after(50, PPI.set(''))
-
-        WIN.after(50, check)
-
     Warning = Label(WIN, font=('Arial', 15), bg='#48BEBF')
     Warning.place(x=145, y=365)
 
     def gen_windows():
-        second_window(HEIGHT.get(), WIDTH.get())
+        if int(HEIGHT.get()) < 100:
+            Warning.config(text='Window height too small')
+            Warning.place(x=145, y=365)
+        elif int(WIDTH.get()) < 100:
+            Warning.config(text='Window width too small')
+            Warning.place(x=145, y=365)
+        else:
+            Warning.config(text='')
+            WIN.withdraw()
+            second_window(HEIGHT.get(), WIDTH.get())
 
     """ Entries """
     H = Entry(WIN,
@@ -196,7 +184,7 @@ def first_window():
               bg='#42C9B5',
               fg='white',
               bd=0)
-    H.place(x=166, y=150)
+    H.place(x=166, y=178)
     H.bind('<Button-1>', clear_heignt)
     H.bind('<Key>', check_height_val)
 
@@ -207,20 +195,9 @@ def first_window():
               bg='#44C5BB',
               fg='white',
               bd=0)
-    W.place(x=166, y=229)
+    W.place(x=166, y=289)
     W.bind('<Button-1>', clear_width)
     W.bind('<Key>', check_width_val)
-
-    P = Entry(WIN,
-              text=PPI,
-              font=('Arial', 25),
-              width=4,
-              bg='#46C1BC',
-              fg='white',
-              bd=0)
-    P.place(x=166, y=306)
-    P.bind('<Button-1>', clear_ppi)
-    P.bind('<Key>', check_ppi_val)
 
     Button_image = PhotoImage(file='Images\Button Grn.png')
     Button(
