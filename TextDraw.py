@@ -181,9 +181,9 @@ def second_window(Hs, Ws):
                 for i in grid:
                     for c in range(len(i)):
                         if i[c] == 0:
-                            i[c] = '@'
+                            i[c] = '  '
                         else:
-                            i[c] = '#'
+                            i[c] = '@'
 
                     if (len(i) + 1) % Wp:
                         f.write('\n')
