@@ -1,3 +1,4 @@
+import math
 import pygame
 from tkinterPopup import popupmsg
 import constants
@@ -91,7 +92,7 @@ def second_window():
         center=pen_size_decreament_rect.center)
     screen.blit(pen_size_decreament_char, pen_size_decreament_char_rect)
 
-
+    prev_pos = None
     # Run the game loop
     running = True
     while running:
@@ -113,7 +114,7 @@ def second_window():
                 popupmsg("Length of characters?", "Export", grid_state)
 
         # Check if the reset button was clicked
-            elif event.type == pygame.MOUSEBUTTONDOWN and reset_rect.collidepoint(event.pos):
+            elif event.type == pygame.MOUSEBUTTONDOWN and reset_rect.collidepoint(pygame.mouse.get_pos()):
                 # Reset the grid
                 grid_state = [[0 for y in range(
                     constants.GRID_SIZE)] for x in range(constants.GRID_SIZE)]
@@ -125,34 +126,34 @@ def second_window():
                         pygame.draw.rect(screen, constants.WHITE, rect)
                         pygame.draw.rect(screen, constants.BLACK, rect, 1)
             # Check if the Red button was clicked
-            elif event.type == pygame.MOUSEBUTTONDOWN and red_color_rect.collidepoint(event.pos):
+            elif event.type == pygame.MOUSEBUTTONDOWN and red_color_rect.collidepoint(pygame.mouse.get_pos()):
                 Paint_Color = constants.RED
                 pointer = 2
             # Check if the Pink button was clicked
-            elif event.type == pygame.MOUSEBUTTONDOWN and pink_color_rect.collidepoint(event.pos):
+            elif event.type == pygame.MOUSEBUTTONDOWN and pink_color_rect.collidepoint(pygame.mouse.get_pos()):
                 Paint_Color = constants.PINK
                 pointer = 3
             # Check if the Yellow button was clicked
-            elif event.type == pygame.MOUSEBUTTONDOWN and yellow_color_rect.collidepoint(event.pos):
+            elif event.type == pygame.MOUSEBUTTONDOWN and yellow_color_rect.collidepoint(pygame.mouse.get_pos()):
                 Paint_Color = constants.YELLOW
                 pointer = 4
             # Check if the Green button was clicked
-            elif event.type == pygame.MOUSEBUTTONDOWN and green_color_rect.collidepoint(event.pos):
+            elif event.type == pygame.MOUSEBUTTONDOWN and green_color_rect.collidepoint(pygame.mouse.get_pos()):
                 Paint_Color = constants.GREEN
                 pointer = 1
 
             # Check if the Pen Size Increament button was clicked
-            elif event.type == pygame.MOUSEBUTTONDOWN and pen_size_increament_rect.collidepoint(event.pos):
+            elif event.type == pygame.MOUSEBUTTONDOWN and pen_size_increament_rect.collidepoint(pygame.mouse.get_pos()):
                 if Brush_Size < 10:
                     Brush_Size += 1
             # Check if the Pen Size Decreament button was clicked
-            elif event.type == pygame.MOUSEBUTTONDOWN and pen_size_decreament_rect.collidepoint(event.pos):
+            elif event.type == pygame.MOUSEBUTTONDOWN and pen_size_decreament_rect.collidepoint(pygame.mouse.get_pos()):
                 if Brush_Size > 1:
                     Brush_Size -= 1
 
             elif pygame.mouse.get_pressed()[0]:
                 # Check if a cell was clicked
-                x, y = event.pos
+                x, y = pygame.mouse.get_pos()
                 cell_x, cell_y = x // constants.CELL_SIZE, y // constants.CELL_SIZE
                 if 0 <= cell_x < constants.GRID_SIZE and 0 <= cell_y < constants.GRID_SIZE:
                     # Toggle the state of the clicked cell
@@ -165,9 +166,10 @@ def second_window():
                             pygame.draw.rect(
                                 screen, Paint_Color, rect)
                             pygame.draw.rect(screen, constants.BLACK, rect, 1)
+                prev_pos = pygame.mouse.get_pos()
             elif pygame.mouse.get_pressed()[2]:
                 # Check if a cell was clicked
-                x, y = event.pos
+                x, y = pygame.mouse.get_pos()
                 cell_x, cell_y = x // constants.CELL_SIZE, y // constants.CELL_SIZE
                 if 0 <= cell_x < constants.GRID_SIZE and 0 <= cell_y < constants.GRID_SIZE:
                     # Toggle the state of the clicked cell
@@ -180,6 +182,35 @@ def second_window():
                             pygame.draw.rect(
                                 screen, constants.WHITE, rect)
                             pygame.draw.rect(screen, constants.BLACK, rect, 1)
+
+            elif pygame.key.get_pressed()[pygame.K_LSHIFT]:
+                pos = pygame.mouse.get_pos()
+                if prev_pos is not None:
+                    # Calculate the distance and angle between the previous position and the current position
+                    dx = pos[0] - prev_pos[0]
+                    dy = pos[1] - prev_pos[1]
+                    dist = math.sqrt(dx ** 2 + dy ** 2)
+                    
+                    angle = math.atan2(dy, dx)
+                    # Calculate the number of steps needed to draw the line
+                    steps = int(dist / max(constants.CELL_SIZE, constants.CELL_SIZE))
+                    # Draw the line by toggling the color of each cell along the way
+                    if steps != 0:
+                        for i in range(steps + 1):
+                            x = int(prev_pos[0] + dx * i/steps)
+                            y = int(prev_pos[1] + dy * i/steps)
+                            cell_x, cell_y = x // constants.CELL_SIZE, y // constants.CELL_SIZE
+                            if 0 <= cell_x < constants.GRID_SIZE and 0 <= cell_y < constants.GRID_SIZE:
+                                # Toggle the state of the clicked cell
+                                for i in range(cell_x, min(cell_x + Brush_Size, constants.GRID_SIZE)):
+                                    for j in range(cell_y, min(cell_y + Brush_Size, constants.GRID_SIZE)):
+                                        grid_state[j][i] = pointer
+                                        # Update the color of the clicked cell and its 3 neighbors to the right, below, and below-right
+                                        rect = pygame.Rect(i * constants.CELL_SIZE, j *
+                                                        constants.CELL_SIZE, constants.CELL_SIZE, constants.CELL_SIZE)
+                                        pygame.draw.rect(
+                                            screen, Paint_Color, rect)
+                                        pygame.draw.rect(screen, constants.BLACK, rect, 1)
 
         # Update the display
         pygame.display.flip()
